@@ -76,6 +76,50 @@ def check_trans(matrix):
                         return False
     return True
 
+def find_max(matrix):
+    elements = [i for i in range(len(matrix.contains))]
+    for steps in range(len(matrix.contains)):
+        for a in range(len(matrix.contains)):
+            for b in range(len(matrix.contains)):
+                attempted_move = None
+                if matrix.contains[b][elements[a]]:
+                    if attempted_move:
+                        attempted_move = -1
+                    else:
+                        attempted_move = b
+            if attempted_move:
+                if attempted_move>=1:
+                    elements[a] = b
+
+    removed_count = 0
+    for a in range(len(matrix.contains)):
+        connections = False
+        for b in range(len(matrix.contains)):
+            if matrix.contains[b][elements[a-removed_count]]:
+                connections = True
+
+        if connections:
+            elements.pop(a-removed_count)
+            removed_count+=1
+
+
+    elements = list(set(elements))
+    return elements
+
+def find_min(matrix):
+    elements = range(len(matrix.contains))
+    loop_active = None
+    while loop_active:
+        loop_active = False
+        for a in range(len(matrix.contains)):
+            for b in range(len(matrix.contains)):
+                if matrix.contains[elements[a]][b] == 1:
+                    elements[b] = a
+                    loop_active = True
+
+    elements = list(set(elements))
+    return elements
+
 def check_all(matrix):
     print("Це відношення:")
     any = False
@@ -99,6 +143,14 @@ def check_all(matrix):
         any = True
     if not any:
         print("не має вказаних властивостей")
+    if len(find_max(matrix))>1:
+        print("Максимальні елементи: "+str(find_max(matrix)))
+    elif len(find_max(matrix)) == 1:
+        print("Найбільший елемент: " +str(find_max(matrix)[0]))
+    else:
+        print("Максимальних елементів не існує")
+
+
 
 while True:
     check_all(input_matrix())
