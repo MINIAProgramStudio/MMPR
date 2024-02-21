@@ -78,49 +78,54 @@ def check_trans(matrix):
 
 def find_max(matrix):
     elements = [i for i in range(len(matrix.contains))]
+    walker = copy.copy(elements)
+    walker_path = []
     for steps in range(len(matrix.contains)):
-        for a in range(len(matrix.contains)):
+        old_walker = copy.copy(walker)
+        new_walker = []
+        for i in range(len(walker)):
+            a = walker[i]
             for b in range(len(matrix.contains)):
-                attempted_move = None
-                if matrix.contains[b][elements[a]]:
-                    if attempted_move:
-                        attempted_move = -1
-                    else:
-                        attempted_move = b
-            if attempted_move:
-                if attempted_move>=1:
-                    elements[a] = b
-
-    removed_count = 0
-    for a in range(len(matrix.contains)):
-        connections = False
-        for b in range(len(matrix.contains)):
-            if matrix.contains[b][elements[a-removed_count]]:
-                connections = True
-
-        if connections:
-            elements.pop(a-removed_count)
-            removed_count+=1
+                if matrix.contains[b][a]:
+                    walker[i].append(b)
+        walker_path += old_walker
 
 
     elements = list(set(elements))
     return elements
 
 def find_min(matrix):
-    elements = range(len(matrix.contains))
-    loop_active = None
-    while loop_active:
-        loop_active = False
+    elements = [i for i in range(len(matrix.contains))]
+    for steps in range(len(matrix.contains)):
         for a in range(len(matrix.contains)):
+            attempted_move = None
             for b in range(len(matrix.contains)):
-                if matrix.contains[elements[a]][b] == 1:
-                    elements[b] = a
-                    loop_active = True
+                if matrix.contains[elements[a]][b] and a!=b:
+                    if attempted_move:
+                        attempted_move = -1
+                    else:
+                        attempted_move = b
+            if attempted_move:
+                if attempted_move >= 1:
+                    elements[a] = b
+
+    removed_count = 0
+    for a in range(len(matrix.contains)):
+        connections = False
+        for b in range(len(matrix.contains)):
+            if matrix.contains[elements[a - removed_count]][b]:
+                connections = True
+
+        if connections:
+            elements.pop(a - removed_count)
+            removed_count += 1
 
     elements = list(set(elements))
     return elements
 
 def check_all(matrix):
+    os.system('cls')
+    print(matrix)
     print("Це відношення:")
     any = False
     if check_refl(matrix):
@@ -143,12 +148,20 @@ def check_all(matrix):
         any = True
     if not any:
         print("не має вказаних властивостей")
-    if len(find_max(matrix))>1:
-        print("Максимальні елементи: "+str(find_max(matrix)))
+    if len(find_max(matrix)) > 1:
+        print("Максимальні елементи: " + str(find_max(matrix)))
     elif len(find_max(matrix)) == 1:
-        print("Найбільший елемент: " +str(find_max(matrix)[0]))
+        print("Найбільший елемент: " + str(find_max(matrix)[0]))
     else:
         print("Максимальних елементів не існує")
+
+    if len(find_min(matrix)) > 1:
+        print("Мінімальні елементи: " + str(find_min(matrix)))
+    elif len(find_min(matrix)) == 1:
+        print("Найменший елемент: " + str(find_min(matrix)[0]))
+    else:
+        print("Мінімальних елементів не існує")
+    input("Continue>>>")
 
 
 
