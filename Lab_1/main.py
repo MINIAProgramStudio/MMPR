@@ -119,12 +119,14 @@ def aug_matrix(matrix):
     for pos_x in range(len(new_matrix.contains)):
         for pos_y in range(len(new_matrix.contains)):
             new_matrix.contains[pos_x][pos_y] = (new_matrix.contains[pos_x][pos_y]+1)%2
+    return new_matrix
 
 def reverse_matrix(matrix):
     new_matrix = copy.copy(matrix)
     for pos_x in range(len(new_matrix.contains)):
         for pos_y in range(len(new_matrix.contains)):
             new_matrix.contains[pos_x][pos_y] = matrix.contains[pos_y][pos_x]
+    return new_matrix
 def check_all(matrix):
     os.system('cls')
     print(matrix)
