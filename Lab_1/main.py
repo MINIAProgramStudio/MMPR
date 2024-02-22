@@ -78,51 +78,53 @@ def check_trans(matrix):
 
 def find_max(matrix):
     elements = [i for i in range(len(matrix.contains))]
-    walker = copy.copy(elements)
-    walker_path = []
-    for steps in range(len(matrix.contains)):
-        old_walker = copy.copy(walker)
-        new_walker = []
-        for i in range(len(walker)):
-            a = walker[i]
-            for b in range(len(matrix.contains)):
-                if matrix.contains[b][a]:
-                    walker[i].append(b)
-        walker_path += old_walker
+    result = []
+    for el in elements:
+        a_exists = False
+        b_exists = False
+        for a in range(len(matrix.contains)):
+            if a != el and matrix.contains[el][a]:
+                a_exists = True
 
+        for b in range(len(matrix.contains)):
+            if b != el and matrix.contains[b][el]:
+                b_exists = True
 
-    elements = list(set(elements))
-    return elements
+        if a_exists and not b_exists:
+            result.append(el)
+
+    return result
 
 def find_min(matrix):
     elements = [i for i in range(len(matrix.contains))]
-    for steps in range(len(matrix.contains)):
+    result = []
+    for el in elements:
+        a_exists = False
+        b_exists = False
         for a in range(len(matrix.contains)):
-            attempted_move = None
-            for b in range(len(matrix.contains)):
-                if matrix.contains[elements[a]][b] and a!=b:
-                    if attempted_move:
-                        attempted_move = -1
-                    else:
-                        attempted_move = b
-            if attempted_move:
-                if attempted_move >= 1:
-                    elements[a] = b
+            if a != el and matrix.contains[el][a]:
+                a_exists = True
 
-    removed_count = 0
-    for a in range(len(matrix.contains)):
-        connections = False
         for b in range(len(matrix.contains)):
-            if matrix.contains[elements[a - removed_count]][b]:
-                connections = True
+            if b != el and matrix.contains[b][el]:
+                b_exists = True
 
-        if connections:
-            elements.pop(a - removed_count)
-            removed_count += 1
+        if not a_exists and b_exists:
+            result.append(el)
 
-    elements = list(set(elements))
-    return elements
+    return result
 
+def aug_matrix(matrix):
+    new_matrix = copy.copy(matrix)
+    for pos_x in range(len(new_matrix.contains)):
+        for pos_y in range(len(new_matrix.contains)):
+            new_matrix[pos_x][pos_y] = (new_matrix[pos_x][pos_y]+1)%2
+
+def reverse_matrix(matrix):
+    new_matrix = copy.copy(matrix)
+    for pos_x in range(len(new_matrix.contains)):
+        for pos_y in range(len(new_matrix.contains)):
+            new_matrix[pos_x][pos_y] = matrix[pos_y][pos_x]
 def check_all(matrix):
     os.system('cls')
     print(matrix)
@@ -148,6 +150,8 @@ def check_all(matrix):
         any = True
     if not any:
         print("не має вказаних властивостей")
+
+
     if len(find_max(matrix)) > 1:
         print("Максимальні елементи: " + str(find_max(matrix)))
     elif len(find_max(matrix)) == 1:
@@ -161,6 +165,11 @@ def check_all(matrix):
         print("Найменший елемент: " + str(find_min(matrix)[0]))
     else:
         print("Мінімальних елементів не існує")
+
+    print("Оберенене відношення:")
+    print(reverse_matrix(matrix))
+    print('Доповнене відношення:')
+    print(aug_matrix(matrix))
     input("Continue>>>")
 
 
