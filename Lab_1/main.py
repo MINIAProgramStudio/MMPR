@@ -76,56 +76,80 @@ def check_trans(matrix):
                         return False
     return True
 
-def find_max(matrix):
-    elements = [i for i in range(len(matrix.contains))]
-    result = []
-    for el in elements:
-        a_exists = False
-        b_exists = False
-        for a in range(len(matrix.contains)):
-            if a != el and matrix.contains[el][a]:
-                a_exists = True
-
-        for b in range(len(matrix.contains)):
-            if b != el and matrix.contains[b][el]:
-                b_exists = True
-
-        if a_exists and not b_exists:
-            result.append(el)
-
+def RS(matrix):
+    a = copy.copy(matrix)
+    b = copy.copy(matrix)
+    result = copy.copy(matrix)
+    b.transpose()
+    for pos_x in range(a.width()):
+        for pos_y in range(a.height()):
+            result.contains[pos_x][pos_y] = max(0, a.contains[pos_x][pos_y]-b.contains[pos_x][pos_y])
     return result
 
-def find_min(matrix):
+def find_max(matrix):
+    matrix_op = copy.deepcopy(matrix)
+    matrix_op = RS(matrix_op)
+    elements = [i for i in range(len(matrix_op.contains))]
+    result = []
+    for el in elements:
+        good = True
+        for i in range(len(matrix_op.contains)):
+            if (not matrix_op.contains[i][el]) and matrix_op.contains[el][i]:
+                good = False
+        if good:
+            result.append(el)
+    return result
+
+def find_best(matrix):
     elements = [i for i in range(len(matrix.contains))]
     result = []
     for el in elements:
-        a_exists = False
-        b_exists = False
-        for a in range(len(matrix.contains)):
-            if a != el and matrix.contains[el][a]:
-                a_exists = True
-
-        for b in range(len(matrix.contains)):
-            if b != el and matrix.contains[b][el]:
-                b_exists = True
-
-        if not a_exists and b_exists:
+        good = True
+        for i in range(len(matrix.contains)):
+            if not matrix.contains[i][el]:
+                good = False
+        if good:
             result.append(el)
+    return result
 
+def find_worst(matrix):
+    elements = [i for i in range(len(matrix.contains))]
+    result = []
+    for el in elements:
+        good = True
+        for i in range(len(matrix.contains)):
+            if not matrix.contains[el][i]:
+                good = False
+        if good:
+            result.append(el)
+    return result
+def find_min(matrix):
+    matrix_op = copy.deepcopy(matrix)
+    matrix_op = RS(matrix_op)
+    elements = [i for i in range(len(matrix_op.contains))]
+    result = []
+    for el in elements:
+        good = True
+        for i in range(len(matrix_op.contains)):
+            if (not matrix_op.contains[el][i]) and matrix_op.contains[i][el]:
+                good = False
+        if good:
+            result.append(el)
     return result
 
 def aug_matrix(matrix):
     new_matrix = copy.copy(matrix)
     for pos_x in range(len(new_matrix.contains)):
         for pos_y in range(len(new_matrix.contains)):
-            new_matrix.contains[pos_x][pos_y] = (new_matrix.contains[pos_x][pos_y]+1)%2
+            if new_matrix.contains[pos_x][pos_y]:
+                new_matrix.contains[pos_x][pos_y] = 0
+            else:
+                new_matrix.contains[pos_x][pos_y] = 1
     return new_matrix
 
 def reverse_matrix(matrix):
     new_matrix = copy.copy(matrix)
-    for pos_x in range(len(new_matrix.contains)):
-        for pos_y in range(len(new_matrix.contains)):
-            new_matrix.contains[pos_x][pos_y] = matrix.contains[pos_y][pos_x]
+    new_matrix.transpose()
     return new_matrix
 def check_all(matrix):
     os.system('cls')
@@ -153,21 +177,24 @@ def check_all(matrix):
     if not any:
         print("не має вказаних властивостей")
 
-
-    if len(find_max(matrix)) > 1:
+    if find_best(matrix):
+        print("Найкращі елементи: " + str(find_best(matrix)))
+    else:
+        print("Найкращі елементи відсутні")
+    if find_worst(matrix):
+        print("Найгірший елемент: " + str(find_worst(matrix)))
+    else:
+        print("Найгірші елементи відсутні")
+    print("RS:")
+    print(RS(copy.deepcopy(matrix)))
+    if find_max(matrix):
         print("Максимальні елементи: " + str(find_max(matrix)))
-    elif len(find_max(matrix)) == 1:
-        print("Найбільший елемент: " + str(find_max(matrix)[0]))
     else:
-        print("Максимальних елементів не існує")
-
-    if len(find_min(matrix)) > 1:
+        print("Максимальні елементи відсутні")
+    if find_min(matrix):
         print("Мінімальні елементи: " + str(find_min(matrix)))
-    elif len(find_min(matrix)) == 1:
-        print("Найменший елемент: " + str(find_min(matrix)[0]))
     else:
-        print("Мінімальних елементів не існує")
-
+        print("Мінімальні елементи відсутні")
     print("Оберенене відношення:")
     print(reverse_matrix(matrix))
     print('Доповнене відношення:')
