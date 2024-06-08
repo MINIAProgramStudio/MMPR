@@ -62,3 +62,20 @@ class Problem:
                 print(self.coefficients[i])
         else:
             print("Задача не задана повністю")
+
+    def solve(self):
+        if not self.input_complete:
+            return 0
+
+        # розрахувати перетин вхідних відношень
+        matrix = []
+        for i in range(self.number_of_variables):
+            matrix.append([])
+            for ii in range(self.number_of_variables):
+                min_value = 1
+                for iii in range(self.number_of_matrixes):
+                    value = int(self.matrixes[iii][i][ii])*self.coefficients[iii]
+                    if value < min_value:
+                        min_value = value
+                    matrix[i].append(value)
+        crossection = PyTaCo.PythonTableConsole(matrix)

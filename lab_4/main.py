@@ -5,4 +5,5 @@ def test():
     test_prob = Problem()
     test_prob.input()
     test_prob.print()
+    test.solve()
 test()
