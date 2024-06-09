@@ -1,10 +1,18 @@
 import PythonTableConsole as PyTaCo
 from Problem import Problem
+import os
 
-def test():
-    test_prob = Problem(3, 2)
+def loop():
+    test_prob = Problem(int(input("Кількість змінних>>>")), int(input("Кількість відношень>>>")))
     test_prob.input()
+    os.system('cls')
+    print("Умова:")
     test_prob.print()
-    print(test.solve())
-test()
-input()
+    print(test_prob.solve())
+while True:
+    try:
+        loop()
+    except:
+        print("сталося щось дивне")
+        input("Натисніть будь-яку клавішу щоб продовжити")
+        os.system("cls")

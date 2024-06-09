@@ -47,19 +47,20 @@ class Problem:
         for i in range(self.number_of_matrixes):
             self.matrixes.append(input_matrix(self.number_of_variables))
         for i in range(self.number_of_matrixes):
-            print("Введіть коефіцієнт матриці #"+str(i)+":")
+            print("Введіть коефіцієнт матриці #"+str(i+1)+":")
             while True:
                 try:
-                    self.coefficients.append(int(input(">>>")))
+                    self.coefficients.append(float(input(">>>")))
                     break
                 except:
                     print("Невірний ввід, спробуйте ще раз")
+        self.input_complete = True
 
     def print(self):
         if self.input_complete:
             for i in range(self.number_of_matrixes):
-                print(self.matrixes[i])
                 print(self.coefficients[i])
+                print(self.matrixes[i])
         else:
             print("Задача не задана повністю")
 
@@ -67,6 +68,7 @@ class Problem:
         if not self.input_complete:
             return 0
 
+        print("Розв'язок:")
         # розрахувати перетин вхідних відношень
         matrix = []
         for i in range(self.number_of_variables):
@@ -79,6 +81,9 @@ class Problem:
                         min_value = value
                 matrix[i].append(min_value)
         crossection = PyTaCo.PythonTableConsole(matrix)
+        print("Перетин вхідних відношень:")
+        print(crossection)
+
 
         # розрахувати нечітку підмножину недомінованих альтернатив перетину
         notdom_1 =[]
@@ -87,8 +92,10 @@ class Problem:
             for ii in range(self.number_of_variables):
                 value = float(crossection.contains[ii][i]) - float(crossection.contains[i][ii])
                 if value > sup: sup = value
-            notdom_1.append(sup)
+            notdom_1.append([sup])
         notdom_1 = PyTaCo.PythonTableConsole(notdom_1)
+        print("Недоміновані альтернативи 1:")
+        print(notdom_1)
 
         # адитивна згортка відношень
         matrix = []
@@ -100,25 +107,29 @@ class Problem:
                     value += float(self.matrixes[iii].contains[i][ii]) * float(self.coefficients[iii])
                 matrix[i].append(value)
 
-        adittion = PyTaCo.PythonTableConsole(matrix)
+        addition = PyTaCo.PythonTableConsole(matrix)
+        print("Адитивна згортка вхідних відношень:")
+        print(addition)
 
         # розрахувати нечітку підмножину недомінованих альтернатив аддитивної згортки
         notdom_2 = []
         for i in range(self.number_of_variables):
             sup = 0
             for ii in range(self.number_of_variables):
-                value = float(adittion.contains[ii][i]) - float(adittion.contains[i][ii])
+                value = float(addition.contains[ii][i]) - float(addition.contains[i][ii])
                 if value > sup: sup = value
-            notdom_2.append(sup)
+            notdom_2.append([sup])
         notdom_2 = PyTaCo.PythonTableConsole(notdom_2)
+        print("Недоміновані альтернативи 2:")
+        print(notdom_2)
 
         # перетин недомінованих альтернатив
         results = []
         for i in range(self.number_of_variables):
             matrix.append([])
-            if notdom_1.contains[0][i] < notdom_2.contains[0][i]:
-                results.append(notdom_1.contains[0][i])
+            if notdom_1.contains[i][0] < notdom_2.contains[i][0]:
+                results.append(notdom_1.contains[i][0])
             else:
-                results.append(notdom_1.contains[1][i])
+                results.append(notdom_2.contains[i][0])
 
         return results
