@@ -8,7 +8,9 @@ def loop():
     os.system('cls')
     print("Умова:")
     test_prob.print()
-    print(test_prob.solve())
+    result = test_prob.solve()
+    print("Номер найкращої альтернативи:")
+    print(result + 1)
 while True:
     try:
         loop()

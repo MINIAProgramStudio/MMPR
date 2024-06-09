@@ -1,6 +1,9 @@
 import PythonTableConsole as PyTaCo
 import os
 
+def round_to(number, digits = 4):
+    return int(number*10**digits)/10**digits
+
 def input_matrix(matrix_size = 0):
     os.system('cls')
     if not matrix_size:
@@ -79,7 +82,7 @@ class Problem:
                     value = float(self.matrixes[iii].contains[i][ii])*float(self.coefficients[iii])
                     if value < min_value:
                         min_value = value
-                matrix[i].append(min_value)
+                matrix[i].append(round_to(min_value))
         crossection = PyTaCo.PythonTableConsole(matrix)
         print("Перетин вхідних відношень:")
         print(crossection)
@@ -90,9 +93,9 @@ class Problem:
         for i in range(self.number_of_variables):
             sup = 0
             for ii in range(self.number_of_variables):
-                value = float(crossection.contains[ii][i]) - float(crossection.contains[i][ii])
-                if value > sup: sup = value
-            notdom_1.append([sup])
+                value = float(crossection.contains[i][ii]) - float(crossection.contains[ii][i])
+                if value > sup: sup = max(min(value, 1), 0)
+            notdom_1.append([round_to(1-sup)])
         notdom_1 = PyTaCo.PythonTableConsole(notdom_1)
         print("Недоміновані альтернативи 1:")
         print(notdom_1)
@@ -105,7 +108,7 @@ class Problem:
                 value = 0
                 for iii in range(self.number_of_matrixes):
                     value += float(self.matrixes[iii].contains[i][ii]) * float(self.coefficients[iii])
-                matrix[i].append(value)
+                matrix[i].append(round_to(value))
 
         addition = PyTaCo.PythonTableConsole(matrix)
         print("Адитивна згортка вхідних відношень:")
@@ -116,9 +119,9 @@ class Problem:
         for i in range(self.number_of_variables):
             sup = 0
             for ii in range(self.number_of_variables):
-                value = float(addition.contains[ii][i]) - float(addition.contains[i][ii])
-                if value > sup: sup = value
-            notdom_2.append([sup])
+                value = float(addition.contains[i][ii]) - float(addition.contains[ii][i])
+                if value > sup: sup = max(min(value, 1), 0)
+            notdom_2.append([round_to(1-sup)])
         notdom_2 = PyTaCo.PythonTableConsole(notdom_2)
         print("Недоміновані альтернативи 2:")
         print(notdom_2)
@@ -128,8 +131,10 @@ class Problem:
         for i in range(self.number_of_variables):
             matrix.append([])
             if notdom_1.contains[i][0] < notdom_2.contains[i][0]:
-                results.append(notdom_1.contains[i][0])
+                results.append(round_to(notdom_1.contains[i][0]))
             else:
-                results.append(notdom_2.contains[i][0])
+                results.append(round_to(notdom_2.contains[i][0]))
+        print("Перетин недомінованих альтернатив:")
+        print(results)
 
-        return results
+        return results.index(max(results))
