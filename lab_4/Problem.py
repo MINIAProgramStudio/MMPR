@@ -74,8 +74,51 @@ class Problem:
             for ii in range(self.number_of_variables):
                 min_value = 1
                 for iii in range(self.number_of_matrixes):
-                    value = int(self.matrixes[iii][i][ii])*self.coefficients[iii]
+                    value = float(self.matrixes[iii].contains[i][ii])*float(self.coefficients[iii])
                     if value < min_value:
                         min_value = value
-                    matrix[i].append(value)
+                matrix[i].append(min_value)
         crossection = PyTaCo.PythonTableConsole(matrix)
+
+        # розрахувати нечітку підмножину недомінованих альтернатив перетину
+        notdom_1 =[]
+        for i in range(self.number_of_variables):
+            sup = 0
+            for ii in range(self.number_of_variables):
+                value = float(crossection.contains[ii][i]) - float(crossection.contains[i][ii])
+                if value > sup: sup = value
+            notdom_1.append(sup)
+        notdom_1 = PyTaCo.PythonTableConsole(notdom_1)
+
+        # адитивна згортка відношень
+        matrix = []
+        for i in range(self.number_of_variables):
+            matrix.append([])
+            for ii in range(self.number_of_variables):
+                value = 0
+                for iii in range(self.number_of_matrixes):
+                    value += float(self.matrixes[iii].contains[i][ii]) * float(self.coefficients[iii])
+                matrix[i].append(value)
+
+        adittion = PyTaCo.PythonTableConsole(matrix)
+
+        # розрахувати нечітку підмножину недомінованих альтернатив аддитивної згортки
+        notdom_2 = []
+        for i in range(self.number_of_variables):
+            sup = 0
+            for ii in range(self.number_of_variables):
+                value = float(adittion.contains[ii][i]) - float(adittion.contains[i][ii])
+                if value > sup: sup = value
+            notdom_2.append(sup)
+        notdom_2 = PyTaCo.PythonTableConsole(notdom_2)
+
+        # перетин недомінованих альтернатив
+        results = []
+        for i in range(self.number_of_variables):
+            matrix.append([])
+            if notdom_1.contains[0][i] < notdom_2.contains[0][i]:
+                results.append(notdom_1.contains[0][i])
+            else:
+                results.append(notdom_1.contains[1][i])
+
+        return results
